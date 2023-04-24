@@ -1,0 +1,28 @@
+- hosts: all
+  gather_facts: no
+  tasks:
+
+    - community.docker.docker_network:
+        name: naturalwines
+
+    - community.docker.docker_container:
+        name: app
+        image: "kobabackcountry/devops-example-app:{{ version }}"
+        restart_policy: always
+        state: started
+        networks:
+          - name: naturalwines
+        ports:
+        env:
+          NODE_ENV: production
+
+    - community.docker.docker_container:
+        name: caddy
+        image: "kobabackcountry/devops-example-caddy:{{ version }}"
+        restart_policy: always
+        state: started
+        networks:
+          - name: naturalwines
+        ports:
+          - 80:80
+          - 443:443
